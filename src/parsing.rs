@@ -478,6 +478,17 @@ pub struct StructsBlock<'a, G>(pub(crate) &'a [G], pub(crate) usize);
 impl<'a, G> StructsBlock<'a, G> {
     /// Byte offset from the start of the devicetree image of the first element
     /// of `data`, which must be a subslice of this structs block.
+    /// 
+    /// +-+-structs_off-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+	/// |        |            structs_buffer            |
+	/// +-structs_buffer_addr-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    ///          |                                      |
+    /// +-+-+-+-+-+-data_offset-+-+-+-+-+-+-+-+-+-+-+-+-+
+    ///          |        |------data-------|           |
+    /// +-+-+-+-+-+-+-data_addr-+-+-+-+-+-+-+-+-+-+-+-+-+
+    /// 
+    /// data_offset = (data_address - structs_buffer_address) + structs_off
+    ///          
     pub(crate) fn image_offset_of(&self, data: &[G]) -> usize {
         self.1 + (data.as_ptr().addr() - self.0.as_ptr().addr())
     }
